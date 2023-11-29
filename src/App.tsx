@@ -1,6 +1,11 @@
-import { useState, React } from "react";
+import { MouseEventHandler, useState } from "react";
 
-function Square({ value, squareClickedCb }) {
+interface SquareProps {
+  value: string;
+  squareClickedCb: MouseEventHandler;
+}
+
+function Square({ value, squareClickedCb }: SquareProps) {
   return (
     <button className="square" onClick={squareClickedCb}>
       {value}
@@ -56,7 +61,7 @@ export default function Board() {
   );
 }
 
-function calculateWinner(squares) {
+function calculateWinner(squares: string[]) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
