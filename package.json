@@ -8,14 +8,14 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
-
   "dependencies": {
     "react": "^18",
     "react-dom": "^18",
     "react-scripts": "^5"
   },
   "devDependencies": {
-    "eslint": "^8"
+    "eslint": "^8",
+    "typescript": "^5"
   },
   "main": "src/index.js",
   "browserslist": {
