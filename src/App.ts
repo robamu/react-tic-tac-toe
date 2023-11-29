@@ -13,14 +13,14 @@ export default function Board() {
   const [squares, setSquares] = useState(Array(9).fill(null));
 
   const winner = calculateWinner(squares);
-  let status;
+  let status: string;
   if (winner) {
     status = "Winner: " + winner;
   } else {
     status = "Next player: " + (xIsNext ? "X" : "O");
   }
 
-  function handleClick(i) {
+  function handleClick(i: number) {
     const nextSquares = squares.slice();
     if (squares[i]) {
       return;
