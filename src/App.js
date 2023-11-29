@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 function Square({ value, squareClickedCb }) {
-  return <button className="square" onClick={squareClickedCb}>{value}</button>;
+  return (
+    <button className="square" onClick={squareClickedCb}>
+      {value}
+    </button>
+  );
 }
 
 export default function Board() {
