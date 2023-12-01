@@ -5,17 +5,70 @@ interface SquareProps {
   squareClickedCb: MouseEventHandler;
 }
 
-function Square({ value, squareClickedCb }: SquareProps) {
+export default function Game() {
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = currentMove % 2 === 0;
+  const currentSquares = history[currentMove];
+
+  function handlePlay(nextSquares: Array<number>[]) {
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    setCurrentMove(nextHistory.length - 1);
+    setHistory([...history, nextSquares]);
+  }
+  function jumpTo(nextMove: number) {
+    setCurrentMove(nextMove);
+  }
+
+  const moves = history.map((_, move) => {
+    let description;
+    if (move === 0) {
+      description = "Go to game start";
+    } else if (move < history.length - 1) {
+      description = "Go to move #" + move;
+    } else {
+      description = "You are at move #" + move;
+      return <li key={move}>{description}</li>;
+    }
+
+    return (
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
+
   return (
-    <button className="square" onClick={squareClickedCb}>
-      {value}
-    </button>
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+      </div>
+      <div className="game-info">
+        <ol>{moves}</ol>
+      </div>
+    </div>
   );
 }
 
-export default function Board() {
-  const [xIsNext, setXIsNext] = useState(true);
-  const [squares, setSquares] = useState(Array(9).fill(null));
+interface BoardProps {
+  xIsNext: boolean;
+  squares: string[];
+  onPlay: any;
+}
+
+export function Board({ xIsNext, squares, onPlay }: BoardProps) {
+  function handleClick(i: number) {
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    const nextSquares = squares.slice();
+    if (xIsNext) {
+      nextSquares[i] = "X";
+    } else {
+      nextSquares[i] = "O";
+    }
+    onPlay(nextSquares);
+  }
 
   const winner = calculateWinner(squares);
   let status: string;
@@ -25,39 +78,39 @@ export default function Board() {
     status = "Next player: " + (xIsNext ? "X" : "O");
   }
 
-  function handleClick(i: number) {
-    const nextSquares = squares.slice();
-    if (squares[i]) {
-      return;
+  let board = [];
+  for (let row = 0; row < 3; row++) {
+    let squaresForRow = [];
+    for (let col = 0; col < 3; col++) {
+      const squareIndex = row * 3 + col;
+      squaresForRow.push(
+        <Square
+          key={squareIndex}
+          value={squares[squareIndex]}
+          squareClickedCb={() => handleClick(squareIndex)}
+        />,
+      );
     }
-    if (xIsNext) {
-      nextSquares[i] = "X";
-    } else {
-      nextSquares[i] = "O";
-    }
-    setXIsNext(!xIsNext);
-    setSquares(nextSquares);
+    board.push(
+      <div key={row} className="board-row">
+        {squaresForRow}
+      </div>,
+    );
   }
 
   return (
     <>
       <div className="status">{status}</div>
-      <div className="board-row">
-        <Square value={squares[0]} squareClickedCb={() => handleClick(0)} />
-        <Square value={squares[1]} squareClickedCb={() => handleClick(1)} />
-        <Square value={squares[2]} squareClickedCb={() => handleClick(2)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} squareClickedCb={() => handleClick(3)} />
-        <Square value={squares[4]} squareClickedCb={() => handleClick(4)} />
-        <Square value={squares[5]} squareClickedCb={() => handleClick(5)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} squareClickedCb={() => handleClick(6)} />
-        <Square value={squares[7]} squareClickedCb={() => handleClick(7)} />
-        <Square value={squares[8]} squareClickedCb={() => handleClick(8)} />
-      </div>
+      <div className="board">{board}</div>
     </>
+  );
+}
+
+function Square({ value, squareClickedCb }: SquareProps) {
+  return (
+    <button className="square" onClick={squareClickedCb}>
+      {value}
+    </button>
   );
 }
 
